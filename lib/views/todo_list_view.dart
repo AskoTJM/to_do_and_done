@@ -1,40 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_and_done/models/todomodel.dart';
 
-class DataTableWidget extends StatefulWidget {
-  const DataTableWidget({Key? key, required this.timeTravel}) : super(key: key);
-  final String timeTravel;
-
-  @override
-  _DataTableWidget createState() => _DataTableWidget();
-}
-
-class _DataTableWidget extends State<DataTableWidget> {
-  static const int numItems = 10;
-  List<bool> selected = List<bool>.generate(numItems, (int index) => false);
-
+class DataTableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var list = context.watch<ToDoModel>();
+    var tempList = list.getListByStatus();
+
     return SizedBox(
-        width: double.infinity,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          children: <Widget>[
-            Container(
-              height: 50,
-              color: Colors.amber[600],
-              child: const Center(child: Text("ds")),
-            ),
-            Container(
-              height: 50,
-              color: Colors.amber[500],
-              child: const Center(child: Text('Entry B')),
-            ),
-            Container(
-              height: 50,
-              color: Colors.amber[100],
-              child: const Center(child: Text('Entry C')),
-            ),
-          ],
-        ));
+      width: double.infinity,
+      child: Consumer<ToDoModel>(builder: (context, todoList, child) {
+        return ListView.builder(
+          itemCount: tempList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text('${tempList[index].todo}'),
+            );
+          },
+        );
+      }),
+    );
   }
 }

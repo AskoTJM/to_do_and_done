@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:to_do_and_done/consts/consts.dart';
 import 'package:to_do_and_done/models/todomodel.dart';
 
 import 'Views/todo_form_view.dart';
 import 'Views/todo_list_view.dart';
 
 void main() {
-  //runApp(MaterialApp(home: MyApp()));
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Provider<ToDoModel>(
+    return ChangeNotifierProvider<ToDoModel>(
       create: (context) => ToDoModel(),
       child: MaterialApp(
         title: 'ToDoAndDone',
@@ -35,7 +35,8 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   void _openToDo() {
     Navigator.push(
       context,
@@ -54,47 +55,61 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var list = context.watch<ToDoModel>();
     return DefaultTabController(
       initialIndex: 1,
       length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          bottom: const TabBar(
-            tabs: <Widget>[
-              Tab(
-                text: "Past",
-                icon: Icon(Icons.arrow_back),
+      child: Builder(
+        builder: (BuildContext context) {
+          final TabController tabController = DefaultTabController.of(context)!;
+          tabController.addListener(() {
+            if (tabController.index != tabController.previousIndex) {
+              if (tabController.index == 0) list.changeState(todo_choices.done);
+              if (tabController.index == 1)
+                list.changeState(todo_choices.doing);
+              if (tabController.index == 2) list.changeState(todo_choices.todo);
+            }
+          });
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+              bottom: const TabBar(
+                tabs: <Widget>[
+                  Tab(
+                    text: "Past",
+                    icon: Icon(Icons.arrow_back),
+                  ),
+                  Tab(
+                    text: "Now",
+                    icon: Icon(Icons.adb_rounded),
+                  ),
+                  Tab(
+                    text: "Future",
+                    icon: Icon(Icons.arrow_forward),
+                  ),
+                ],
               ),
-              Tab(
-                text: "Now",
-                icon: Icon(Icons.adb_rounded),
-              ),
-              Tab(
-                text: "Future",
-                icon: Icon(Icons.arrow_forward),
-              ),
-            ],
-          ),
-        ),
-        body: const TabBarView(
-          children: <Widget>[
-            Center(
-              child: DataTableWidget(timeTravel: "past"),
             ),
-            Center(
-              child: DataTableWidget(timeTravel: "now"),
+            body: TabBarView(
+              children: <Widget>[
+                Center(
+                  child: DataTableWidget(),
+                ),
+                Center(
+                  child: DataTableWidget(),
+                ),
+                Center(
+                  child: DataTableWidget(),
+                ),
+              ],
             ),
-            Center(
-              child: DataTableWidget(timeTravel: "future"),
+            floatingActionButton: FloatingActionButton(
+              tooltip: 'Add ToDo',
+              child: Icon(Icons.add),
+              onPressed: _openToDo,
             ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          tooltip: 'Add ToDo',
-          child: Icon(Icons.add),
-          onPressed: _openToDo,
-        ),
+          );
+        },
       ),
     );
   }
