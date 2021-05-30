@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+// Not currently used.
 Future<String> getFilePath() async {
   Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
   String appDocumentsPath = appDocumentsDirectory.path;

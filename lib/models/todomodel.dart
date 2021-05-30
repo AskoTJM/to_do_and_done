@@ -9,10 +9,6 @@ class ToDoModel extends ChangeNotifier {
   var _prevToDoState = todo_choices.todo;
   var _idToEdit = 0;
 
-  //String tempTodo = readFile() as String;
-//  List todoList = [];
-//  List<Todo> todoList = todos() as List<Todo>;
-
   List<Todo> todoList = [
     Todo(
         id: 1,

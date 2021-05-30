@@ -5,6 +5,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:to_do_and_done/models/todo_class.dart';
 
+// Not currently used.
 sqliteDatabase() async {
   WidgetsFlutterBinding.ensureInitialized();
   return openDatabase(
