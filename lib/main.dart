@@ -37,25 +37,27 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  void _openToDo() {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(title: Text('Add ToDo')),
-            body: Center(
-              child: ToDoFormWidget(),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     var list = context.watch<ToDoModel>();
+
+    void _openToDo() {
+      list.changeState(todo_choices.add);
+      Navigator.push(
+        context,
+        MaterialPageRoute<void>(
+          builder: (BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(title: Text('Add ToDo')),
+              body: Center(
+                child: ToDoFormWidget(),
+              ),
+            );
+          },
+        ),
+      );
+    }
+
     return DefaultTabController(
       initialIndex: 1,
       length: 3,

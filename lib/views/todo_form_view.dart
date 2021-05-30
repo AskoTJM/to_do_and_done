@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '/models/todomodel.dart';
 
 class ToDoFormWidget extends StatefulWidget {
   const ToDoFormWidget({Key? key}) : super(key: key);
@@ -9,9 +12,22 @@ class ToDoFormWidget extends StatefulWidget {
 
 class _ToDoFormWidget extends State<ToDoFormWidget> {
   String dropdownValue = 'ToDo';
+  TextEditingController _todoTextController = TextEditingController();
+  TextEditingController _detailsTextController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    var list = context.watch<ToDoModel>();
+    var todoToEdit = list.getById(list.getIdToEdit());
+    _todoTextController.text = todoToEdit.todo;
+    _detailsTextController.text = todoToEdit.details;
+
+    void _returnToMain() {
+      var prevState = list.getPrevState();
+      list.changeState(prevState);
+      Navigator.pop(context);
+    }
+
     return SizedBox(
       width: double.infinity,
       height: double.infinity,
@@ -20,7 +36,8 @@ class _ToDoFormWidget extends State<ToDoFormWidget> {
         children: <Widget>[
           Container(
             margin: new EdgeInsets.all(10),
-            child: const TextField(
+            child: TextFormField(
+              controller: _todoTextController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'What ToDo',
@@ -29,7 +46,8 @@ class _ToDoFormWidget extends State<ToDoFormWidget> {
           ),
           Container(
             margin: new EdgeInsets.all(10),
-            child: const TextField(
+            child: TextFormField(
+              controller: _detailsTextController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Details',
@@ -40,11 +58,11 @@ class _ToDoFormWidget extends State<ToDoFormWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: (() => Navigator.pop(context)),
+                onPressed: () => _returnToMain(),
                 child: const Text('Save'),
               ),
               ElevatedButton(
-                onPressed: (() => Navigator.pop(context)),
+                onPressed: () => _returnToMain(),
                 child: const Text('Cancel'),
               ),
               Container(

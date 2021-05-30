@@ -3,6 +3,8 @@ import 'package:to_do_and_done/consts/consts.dart';
 
 class ToDoModel extends ChangeNotifier {
   var _todoState = todo_choices.doing;
+  var _prevToDoState;
+  var _idToEdit = 0;
 
   static List<Todo> todoList = [
     Todo(
@@ -21,7 +23,7 @@ class ToDoModel extends ChangeNotifier {
         todo: "testDone3",
         details: "testDetailsDone3"),
     Todo(
-        id: 4,
+        id: 8,
         status: todo_choices.todo,
         todo: "testTodo4",
         details: "testDetailsTodo4"),
@@ -37,7 +39,16 @@ class ToDoModel extends ChangeNotifier {
         details: "testDetailsDone6")
   ];
 
+  setIdToEdit(int id) {
+    _idToEdit = id;
+  }
+
+  getIdToEdit() {
+    return _idToEdit;
+  }
+
   changeState(todo_choices choice) {
+    _prevToDoState = _todoState;
     _todoState = choice;
   }
 
@@ -45,11 +56,19 @@ class ToDoModel extends ChangeNotifier {
     return _todoState;
   }
 
-  Todo getById(int id) => Todo(
-      id: id,
-      status: todoList[id].status,
-      todo: todoList[id].todo,
-      details: todoList[id].todo);
+  getPrevState() {
+    return _prevToDoState;
+  }
+
+  Todo getById(int id) {
+    var _todoToEdit = todoList.firstWhere((todo) => todo.id == id);
+
+    return Todo(
+        id: _todoToEdit.id,
+        status: _todoToEdit.status,
+        todo: _todoToEdit.todo,
+        details: _todoToEdit.todo);
+  }
 
   getListByStatus() {
     return (todoList.where((todo) => todo.status == _todoState).toList());
@@ -68,10 +87,4 @@ class Todo {
       required this.status,
       required this.todo,
       required this.details});
-
-  @override
-  int get hashCode => id;
-
-  @override
-  bool operator ==(Object other) => other is Todo && other.id == id;
 }
