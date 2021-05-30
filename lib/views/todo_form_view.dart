@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '/models/todomodel.dart';
+import 'package:to_do_and_done/consts/consts.dart';
+import 'package:to_do_and_done/models/todo_class.dart';
+import 'package:to_do_and_done/models/todomodel.dart';
 
 class ToDoFormWidget extends StatefulWidget {
   const ToDoFormWidget({Key? key}) : super(key: key);
@@ -14,15 +15,37 @@ class _ToDoFormWidget extends State<ToDoFormWidget> {
   String dropdownValue = 'ToDo';
   TextEditingController _todoTextController = TextEditingController();
   TextEditingController _detailsTextController = TextEditingController();
+  int idEditing = -1;
 
   @override
   Widget build(BuildContext context) {
     var list = context.watch<ToDoModel>();
-    var todoToEdit = list.getById(list.getIdToEdit());
-    _todoTextController.text = todoToEdit.todo;
-    _detailsTextController.text = todoToEdit.details;
+    if (list.getState() == todo_choices.edit) {
+      var _todoToEdit = list.getById(list.getIdToEdit());
+      _todoTextController.text = _todoToEdit.todo;
+      _detailsTextController.text = _todoToEdit.details;
+      idEditing = _todoToEdit.id;
+    }
 
-    void _returnToMain() {
+    void _cancelAndReturnToMain() {
+      (list.getState() == todo_choices.edit) ? list.deleteTodo(idEditing) : "";
+      var prevState = list.getPrevState();
+      list.changeState(prevState);
+      Navigator.pop(context);
+    }
+
+    void _saveAndReturnToMain() {
+      todo_choices statusSwitch = todo_choices.todo;
+      if (dropdownValue == "Doing") statusSwitch = todo_choices.doing;
+      if (dropdownValue == "Done") statusSwitch = todo_choices.done;
+
+      var todo = Todo(
+        id: idEditing,
+        todo: _todoTextController.text,
+        details: _detailsTextController.text,
+        status: statusSwitch,
+      );
+      (idEditing == -1) ? list.addToList(todo) : list.updateTodo(todo);
       var prevState = list.getPrevState();
       list.changeState(prevState);
       Navigator.pop(context);
@@ -58,12 +81,14 @@ class _ToDoFormWidget extends State<ToDoFormWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: () => _returnToMain(),
+                onPressed: () => _saveAndReturnToMain(),
                 child: const Text('Save'),
               ),
               ElevatedButton(
-                onPressed: () => _returnToMain(),
-                child: const Text('Cancel'),
+                onPressed: () => _cancelAndReturnToMain(),
+                child: (list.getState() == todo_choices.add)
+                    ? const Text('Cancel')
+                    : const Text('Delete'),
               ),
               Container(
                 child: DropdownButton<String>(

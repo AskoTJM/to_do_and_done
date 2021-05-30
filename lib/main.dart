@@ -5,8 +5,10 @@ import 'package:to_do_and_done/models/todomodel.dart';
 
 import 'Views/todo_form_view.dart';
 import 'Views/todo_list_view.dart';
+import 'database/sqlite.dart';
 
 void main() {
+  sqliteDatabase();
   runApp(MyApp());
 }
 
@@ -40,8 +42,11 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     var list = context.watch<ToDoModel>();
+    getDatabase();
 
     void _openToDo() {
+      list.changeState(todo_choices.add);
+      list.setIdToEdit(0);
       list.changeState(todo_choices.add);
       Navigator.push(
         context,

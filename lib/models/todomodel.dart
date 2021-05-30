@@ -1,12 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_and_done/consts/consts.dart';
 
+import 'todo_class.dart';
+
 class ToDoModel extends ChangeNotifier {
   var _todoState = todo_choices.doing;
-  var _prevToDoState;
+  var _prevToDoState = todo_choices.todo;
   var _idToEdit = 0;
 
-  static List<Todo> todoList = [
+  //String tempTodo = readFile() as String;
+//  List todoList = [];
+//  List<Todo> todoList = todos() as List<Todo>;
+
+  List<Todo> todoList = [
     Todo(
         id: 1,
         status: todo_choices.todo,
@@ -39,7 +46,35 @@ class ToDoModel extends ChangeNotifier {
         details: "testDetailsDone6")
   ];
 
-  setIdToEdit(int id) {
+  addToList(Todo addTodo) {
+    addTodo.id = getMaxId() + 1;
+    todoList.add(addTodo);
+    notifyListeners();
+  }
+
+  updateTodo(Todo updateTodo) {
+    int index = todoList.indexWhere((td) => td.id == updateTodo.id);
+    todoList[index] = updateTodo;
+
+    notifyListeners();
+  }
+
+  deleteTodo(int id) {
+    todoList.removeWhere((element) => element.id == id);
+    notifyListeners();
+  }
+
+  getMaxId() {
+    if (todoList.isNotEmpty) {
+      dynamic max = todoList.first;
+      todoList.forEach((e) {
+        if (e.id > max.id) max = e;
+      });
+      return (max.id);
+    }
+  }
+
+  void setIdToEdit(int id) {
     _idToEdit = id;
   }
 
@@ -50,6 +85,7 @@ class ToDoModel extends ChangeNotifier {
   changeState(todo_choices choice) {
     _prevToDoState = _todoState;
     _todoState = choice;
+    notifyListeners();
   }
 
   getState() {
@@ -73,18 +109,4 @@ class ToDoModel extends ChangeNotifier {
   getListByStatus() {
     return (todoList.where((todo) => todo.status == _todoState).toList());
   }
-}
-
-@immutable
-class Todo {
-  final int id;
-  final String todo;
-  final String details;
-  final todo_choices status;
-
-  Todo(
-      {required this.id,
-      required this.status,
-      required this.todo,
-      required this.details});
 }
